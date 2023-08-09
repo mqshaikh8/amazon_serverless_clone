@@ -2,9 +2,7 @@ import React from 'react';
 import './Order.css';
 import CheckoutProduct from './CheckoutProduct';
 
-function Order({order}) {
-  console.log("THis is the order comp", order)
-  return (
+const Order = ({order}) => (
     <div className='order'>
         <h2>Order</h2>
         <p>{order.created.seconds}</p>
@@ -23,7 +21,6 @@ function Order({order}) {
         }
         <p> <small>{ order.amount / 100 }</small> </p>
     </div>
-  )
-}
+);
 
 export default Order

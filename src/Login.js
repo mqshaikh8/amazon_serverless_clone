@@ -3,8 +3,8 @@ import './Login.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { db, auth, addDoc, collection } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+
 function Login() {
-    console.log("Login")
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -13,9 +13,7 @@ function Login() {
         e.preventDefault();
 
         signInWithEmailAndPassword(auth,email, password)
-            .then(auth => {
-                navigate('/')
-            })
+            .then(auth => navigate('/'))
             .catch(error => alert(error.message))
     }
 
@@ -24,24 +22,8 @@ function Login() {
 
         createUserWithEmailAndPassword(auth, email, password)
             .then(async (auth) => {
-                // it successfully created a new user with email and password
                 if (auth) {
-                    console.log("Auth:", auth)
-                    // db.collection('users').doc(auth.user.uid).set(auth.user)
-                    await addDoc(collection(db, "users"), {
-                        id: auth.user.uid,
-                        email: auth.user.email
-                    })
-                    // console.log("User Created Auth:", auth)
-                    // console.log("Firebase Doc refrence:",doc(db, 'users', auth.user.uid))
-                    // console.log("Firebase email:",{...auth.user})
-                    // setDoc(doc(db, 'users', auth.user.uid), auth.user) 
-                    // .then(() => {
-                    //     console.log('Data successfully written to Firestore!');
-                    // })
-                    // .catch((error) => {
-                    //     console.error('Error writing data to Firestore:', error);
-                    // })
+                    await addDoc(collection(db, "users"), { id: auth.user.uid, email: auth.user.email})
                     navigate('/')
                 }
             })

@@ -1,81 +1,57 @@
-import {useEffect, useState} from 'react';
 import './Payment.css';
+import { useState} from 'react';
 import { useStateValue } from './StateProvider';
 import CheckoutProduct from './CheckoutProduct';
 import {Link, useNavigate} from 'react-router-dom';
-import {CardElement, useStripe, useElements} from '@stripe/react-stripe-js';
+import {CardElement} from '@stripe/react-stripe-js';
 import { getBasketTotal } from './reducer';
-import axios from './axios';
-import { db, auth, doc, setDoc, collection } from './firebase';
+import { db, doc, setDoc,  } from './firebase';
 
 export default function Payment() {
-    console.log("Payment")
     const [{basket,user}, dispatch] = useStateValue();
     const navigate = useNavigate();
-    const stripe = useStripe();
-    const elements = useElements();
 
     const [succeeded, setSucceeded] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(false);
     const [disabled, setDisabled] = useState(null);
     const [processing, setProcessing] = useState("");
-    const [clientSecret, setClientSecret] = useState(true);
 
-    useEffect(() => {
-        const getClientSecret = async () => {
-            const response = await axios({
-                method: 'post',
-                url: `/payments/create?total=${getBasketTotal(basket) * 100}`
-            })
-            setClientSecret(response.data.clientSecret)
-        }
 
-        // getClientSecret();
-    }, [basket])
     const handleSubmit = async (e) => {
         e.preventDefault();
         setProcessing(true);
 
-        // const payload = await stripe.confirmCardPayment(clientSecret, {
-        //     payment_method: {
-        //         card: elements.getElement(CardElement)
-        //     }
-        // }).then(({ paymentIntent }) => {
-            console.log(user, "Updating Orders:",basket)
-            const paymentIntent = `${user?.uid} payment_intent`
-            const data = {
-                "orders": [
-                    {
-                    id: paymentIntent,
-                    basket: basket,
-                    amount: getBasketTotal(basket),
-                    created: new Date()
-                    }
-                ]
-                
-            }
-            const userDocRef = doc(db, 'users', user?.uid);
-            console.log("UserDocRef:", userDocRef)
+        const paymentIntent = `${user?.uid} payment_intent`
+        const data = {
+            "orders": [
+                {
+                id: paymentIntent,
+                basket: basket,
+                amount: getBasketTotal(basket),
+                created: new Date()
+                }
+            ]
             
+        }
+        const userDocRef = doc(db, 'users', user?.uid);
+            
+        setDoc(userDocRef, data, {merge: true})
+        .then(() => {
+            console.log('Data successfully written to Firestore!');
+        })
+        .catch((error) => {
+            console.error('Error writing data to Firestore:', error);
+        })
 
-            setDoc(userDocRef, data, {merge: true})
-            .then(() => {
-                console.log('Data successfully written to Firestore!');
-            })
-            .catch((error) => {
-                console.error('Error writing data to Firestore:', error);
-            })
+        setSucceeded(true);
+        setProcessing(false)
 
-            setSucceeded(true);
-            setError(null)
-            setProcessing(false)
+        dispatch({
+            type: 'EMPTY_BASKET'
+        })
 
-            dispatch({
-                type: 'EMPTY_BASKET'
-            })
-            console.log("Navigating out of Payments >>>>>")
-            navigate('/orders', {replace: true})
-        // })
+        navigate('/orders', {replace: true})
+
     }
 
     const handleChange = event => {
@@ -135,6 +111,7 @@ export default function Payment() {
                             </button>
                         </div>
                     </form>
+                    {error ? `Error: ${error}` : null}
                 </div>
             </div>
         </div>

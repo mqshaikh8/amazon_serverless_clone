@@ -12,7 +12,6 @@ import {auth} from './firebase';
 import { useStateValue } from './StateProvider';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { db, doc, setDoc, collection} from './firebase';
 
 const promise = loadStripe(
   'pk_test_51CON8PHAZxeW5yowITeSH38vcU8ktA7kCI4Njnr2etvuk8BiWUij3ic71qFMWAd2oId8AvCXS1ookfRNDw8kxtOb00Q1zW8SgV'
@@ -28,15 +27,13 @@ const PaymentContainer = () => (
 
 function App() {
   const [{}, dispatch] = useStateValue();
-  console.log("This is in the App<<<<<<<<<<<<<<")
   useEffect(() => {
-
 
     auth.onAuthStateChanged(authUser => {
       console.log("The User is >>>>>>>>>>>", authUser)
 
       if(authUser){
-        
+      
         dispatch({
           type:'SET_USER',
           user: authUser

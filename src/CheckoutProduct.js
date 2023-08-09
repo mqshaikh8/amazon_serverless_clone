@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import './CheckoutProduct.css';
 import { useStateValue } from './StateProvider';
 
 function CheckoutProduct({id, title, image, price, rating, hideButton}) {
-    const [ { basket }, dispatch] = useStateValue();
+    const [ _, dispatch] = useStateValue();
     console.log("CheckoutProduct")
     const removeFromBasket = () => {
         dispatch({

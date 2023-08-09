@@ -3,10 +3,9 @@ import React from 'react'
 import { useStateValue } from './StateProvider';
 
 function Product({id, title, image, price, rating}) {
-    console.log("Product")
-    const [{basket}, dispatch] = useStateValue();
+    const [{}, dispatch] = useStateValue();
+    
     const addToBasket = () => {
-        console.log("addToBasket")
         dispatch({
             type:"ADD_TO_BASKET",
             item:{

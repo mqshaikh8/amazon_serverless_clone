@@ -5,7 +5,7 @@ import './Orders.css';
 import { db, doc, getDoc } from './firebase';
 
 function Orders() {
-    const [{basket, user}, dispatch] = useStateValue();
+    const [{basket, user}] = useStateValue();
     const [ orders, setOrders ] = useState([]);
 
     useEffect(() => {
@@ -16,22 +16,10 @@ function Orders() {
                 if (docSnap.exists()) {
                     const { orders } = docSnap.data()
                     setOrders([...orders])
-                    console.log("Document data:", docSnap.data());
                 } else {
-                    // docSnap.data() will be undefined in this case
                     console.log("No such document!");
                 }
-                // db
-                // .collection('users')
-                // .doc(user?.uid)
-                // .collection('orders')
-                // .orderBy('created', 'desc')
-                // .onSnapshot(snapshot => (
-                //     setOrders(snapshot.docs.map(doc => ({
-                //         id: doc.id,
-                //         data: doc.data()
-                //     })))
-                // ))
+
             } else{
                 setOrders([])
             }
@@ -39,7 +27,7 @@ function Orders() {
         
         fetchPastOrderData()
     }, [user])
-    console.log("Orders Array:", orders)
+
   return (
     <div className='orders'>
         <h1>Your Orders</h1>
